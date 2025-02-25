@@ -63,19 +63,15 @@ class _LoadingAnimationState extends State<LoadingAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SizedBox(
-          height: widget.size,
-          width: widget.size,
-          child: CustomPaint(
-            painter: MyPainter(
-              radius1: animation1.value,
-              radius2: animation2.value,
-            ),
-            child: Container(),
-          ),
+    return SizedBox(
+      height: widget.size,
+      width: widget.size,
+      child: CustomPaint(
+        painter: MyPainter(
+          radius1: animation1.value,
+          radius2: animation2.value,
         ),
+        child: Container(),
       ),
     );
   }
