@@ -15,7 +15,12 @@ class _LottieLoadingState extends State<LottieLoading> {
   void initState() {
     super.initState();
 
-    _composition = AssetLottie('LottieLogo1.json').load();
+    // _composition = AssetLottie('LottieLogo1.json').load();
+    _composition = AssetLottie('firework.json').load();
+    // _composition = AssetLottie('thumbs_up.json').load();
+    // _composition = AssetLottie('android_wave.json').load();
+    // _composition = AssetLottie('issue.json').load();
+    // _composition = AssetLottie('camera_change.json').load();
   }
 
   @override
