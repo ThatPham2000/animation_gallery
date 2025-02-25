@@ -27,6 +27,7 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // return const StarBucks();
     return const Scaffold(
       body: Center(
         child: LottieLoading(),
