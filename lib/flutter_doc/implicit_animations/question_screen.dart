@@ -1,6 +1,7 @@
 import 'package:animation_gallery/flutter_doc/implicit_animations/scoreboard.dart';
 import 'package:flutter/material.dart';
 
+import 'flip_effect.dart';
 import 'view_model.dart';
 
 class QuestionScreen extends StatefulWidget {
@@ -158,21 +159,25 @@ class AnswerCards extends StatelessWidget {
         if (correctAnswer == index) {
           color = Theme.of(context).colorScheme.tertiaryContainer;
         }
-        return Card.filled(
-          key: ValueKey(answers[index]),
-          color: color,
-          elevation: 2,
-          margin: EdgeInsets.all(8),
-          clipBehavior: Clip.hardEdge,
-          child: InkWell(
-            onTap: () => onTapped(index),
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Center(
-                child: Text(
-                  answers.length > index ? answers[index] : '',
-                  style: Theme.of(context).textTheme.titleMedium,
-                  overflow: TextOverflow.clip,
+        return CardFlipEffect(
+          delayAmount: index.toDouble() / 2,
+          duration: const Duration(milliseconds: 300),
+          child: Card.filled(
+            key: ValueKey(answers[index]),
+            color: color,
+            elevation: 2,
+            margin: EdgeInsets.all(8),
+            clipBehavior: Clip.hardEdge,
+            child: InkWell(
+              onTap: () => onTapped(index),
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(
+                  child: Text(
+                    answers.length > index ? answers[index] : '',
+                    style: Theme.of(context).textTheme.titleMedium,
+                    overflow: TextOverflow.clip,
+                  ),
                 ),
               ),
             ),
