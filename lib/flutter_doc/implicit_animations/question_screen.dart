@@ -1,4 +1,6 @@
+import 'package:animation_gallery/flutter_doc/implicit_animations/scoreboard.dart';
 import 'package:flutter/material.dart';
+
 import 'view_model.dart';
 
 class QuestionScreen extends StatefulWidget {
@@ -23,11 +25,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
             actions: [
               TextButton(
                 onPressed:
-                viewModel.hasNextQuestion && viewModel.didAnswerQuestion
-                    ? () {
-                  viewModel.getNextQuestion();
-                }
-                    : null,
+                    viewModel.hasNextQuestion && viewModel.didAnswerQuestion
+                        ? () {
+                            viewModel.getNextQuestion();
+                          }
+                        : null,
                 child: const Text('Next'),
               ),
             ],
@@ -159,13 +161,9 @@ class StatusBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text(
-              'Question ${viewModel.answeredQuestionCount} / ${viewModel.totalQuestions}',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            Text(
-              'Score: ${viewModel.score}',
-              style: Theme.of(context).textTheme.titleLarge,
+            Scoreboard(
+              score: viewModel.score,
+              totalQuestions: viewModel.totalQuestions,
             ),
           ],
         ),
