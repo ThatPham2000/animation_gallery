@@ -1,4 +1,5 @@
 import 'package:animation_gallery/flutter_doc/implicit_animations/scoreboard.dart';
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
 import 'flip_effect.dart';
@@ -15,6 +16,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
   late final QuizViewModel viewModel = QuizViewModel(
     onGameOver: _handleGameOver,
   );
+  VoidCallback? _showGameOverScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
           body: Center(
             child: Column(
               children: [
-                QuestionCard(question: viewModel.currentQuestion?.question),
+                QuestionCard(                                           // NEW
+                  onChangeOpenContainer: _handleChangeOpenContainer,    // NEW
+                  question: viewModel.currentQuestion?.question,        // NEW
+                  viewModel: viewModel,                                 // NEW
+                ),
                 Spacer(),
                 AnswerCards(
                   onTapped: (index) {
@@ -58,7 +64,17 @@ class _QuestionScreenState extends State<QuestionScreen> {
     );
   }
 
-  void _handleGameOver() {
+  void _handleChangeOpenContainer(VoidCallback openContainer) {        // NEW
+    _showGameOverScreen = openContainer;                               // NEW
+  }                                                                    // NEW
+
+  void _handleGameOver() {                                             // NEW
+    if (_showGameOverScreen != null) {                                 // NEW
+      _showGameOverScreen!();                                          // NEW
+    }                                                                  // NEW
+  }
+
+  void _handleGameOverOld() {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -83,54 +99,128 @@ class _QuestionScreenState extends State<QuestionScreen> {
 class QuestionCard extends StatelessWidget {
   final String? question;
 
-  const QuestionCard({required this.question, super.key});
+  const QuestionCard({
+    required this.onChangeOpenContainer,
+    required this.question,
+    required this.viewModel,
+    super.key,
+  });
+
+  final ValueChanged<VoidCallback> onChangeOpenContainer;
+  final QuizViewModel viewModel;
+
+  static const _backgroundColor = Color(0xfff2f3fa);
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      layoutBuilder: (currentChild, previousChildren) {
-        return Stack(
-          alignment: Alignment.topCenter,
-          children: <Widget>[
-            ...previousChildren,
-            if (currentChild != null) currentChild,
-          ],
-        );
-      },
-      transitionBuilder: (child, animation) {
-        // var offsetAnimation = animation
-        //     .drive(CurveTween(curve: Curves.easeInCubic))
-        //     .drive(Tween<Offset>(
-        //         begin: const Offset(-0.1, 0.0), end: Offset.zero));
-        // return SlideTransition(position: offsetAnimation, child: child);
-        // Add from here...
+    // return AnimatedSwitcher(
+    //   layoutBuilder: (currentChild, previousChildren) {
+    //     return Stack(
+    //       alignment: Alignment.topCenter,
+    //       children: <Widget>[
+    //         ...previousChildren,
+    //         if (currentChild != null) currentChild,
+    //       ],
+    //     );
+    //   },
+    //   transitionBuilder: (child, animation) {
+    //     // var offsetAnimation = animation
+    //     //     .drive(CurveTween(curve: Curves.easeInCubic))
+    //     //     .drive(Tween<Offset>(
+    //     //         begin: const Offset(-0.1, 0.0), end: Offset.zero));
+    //     // return SlideTransition(position: offsetAnimation, child: child);
+    //     // Add from here...
+    //
+    //     final curveAnimation = CurveTween(
+    //       curve: Curves.easeInCubic,
+    //     ).animate(animation);
+    //     final offsetAnimation = Tween<Offset>(
+    //       begin: const Offset(-0.1, 0.0),
+    //       end: Offset.zero,
+    //     ).animate(curveAnimation);
+    //     final fadeInAnimation = curveAnimation; // NEW
+    //     return FadeTransition(
+    //       // NEW
+    //       opacity: fadeInAnimation, // NEW
+    //       child:
+    //           SlideTransition(position: offsetAnimation, child: child), // NEW
+    //     );
+    //   },
+    //   duration: const Duration(milliseconds: 300),
+    //   child: Card(
+    //     key: ValueKey(question),
+    //     elevation: 4,
+    //     child: Padding(
+    //       padding: const EdgeInsets.all(16.0),
+    //       child: Text(
+    //         question ?? '',
+    //         style: Theme.of(context).textTheme.displaySmall,
+    //       ),
+    //     ),
+    //   ),
+    // );
 
-        final curveAnimation = CurveTween(
-          curve: Curves.easeInCubic,
-        ).animate(animation);
-        final offsetAnimation = Tween<Offset>(
-          begin: const Offset(-0.1, 0.0),
-          end: Offset.zero,
-        ).animate(curveAnimation);
-        final fadeInAnimation = curveAnimation; // NEW
-        return FadeTransition(
-          // NEW
-          opacity: fadeInAnimation, // NEW
-          child:
-              SlideTransition(position: offsetAnimation, child: child), // NEW
+    /// solution 2:
+    // return PageTransitionSwitcher(
+    //   // Add from here...
+    //   layoutBuilder: (entries) {
+    //     return Stack(alignment: Alignment.topCenter, children: entries);
+    //   },
+    //   transitionBuilder: (child, animation, secondaryAnimation) {
+    //     return FadeThroughTransition(
+    //       animation: animation,
+    //       secondaryAnimation: secondaryAnimation,
+    //       child: child,
+    //     );
+    //   }, // To here.
+    //   duration: const Duration(milliseconds: 300),
+    //   child: Card(
+    //     key: ValueKey(question),
+    //     elevation: 4,
+    //     child: Padding(
+    //       padding: const EdgeInsets.all(16.0),
+    //       child: Text(
+    //         question ?? '',
+    //         style: Theme.of(context).textTheme.displaySmall,
+    //       ),
+    //     ),
+    //   ),
+    // );
+
+    /// solution 3:
+    return PageTransitionSwitcher(
+      duration: const Duration(milliseconds: 200),
+      transitionBuilder: (child, animation, secondaryAnimation) {
+        return FadeThroughTransition(
+          animation: animation,
+          secondaryAnimation: secondaryAnimation,
+          child: child,
         );
       },
-      duration: const Duration(milliseconds: 300),
-      child: Card(
-        key: ValueKey(question),
-        elevation: 4,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            question ?? '',
-            style: Theme.of(context).textTheme.displaySmall,
-          ),
-        ),
+      child: OpenContainer(                                         // NEW
+        key: ValueKey(question),                                    // NEW
+        tappable: false,                                            // NEW
+        closedColor: _backgroundColor,                              // NEW
+        closedShape: const RoundedRectangleBorder(                  // NEW
+          borderRadius: BorderRadius.all(Radius.circular(12.0)),    // NEW
+        ),                                                          // NEW
+        closedElevation: 4,                                         // NEW
+        closedBuilder: (context, openContainer) {                   // NEW
+          onChangeOpenContainer(openContainer);                     // NEW
+          return ColoredBox(                                        // NEW
+            color: _backgroundColor,                                // NEW
+            child: Padding(                                         // NEW
+              padding: const EdgeInsets.all(16.0),                  // NEW
+              child: Text(
+                question ?? '',
+                style: Theme.of(context).textTheme.displaySmall,
+              ),
+            ),
+          );
+        },
+        openBuilder: (context, closeContainer) {                    // NEW
+          return GameOverScreen(viewModel: viewModel);              // NEW
+        },                                                          // NEW
       ),
     );
   }
@@ -205,6 +295,41 @@ class StatusBar extends StatelessWidget {
             Scoreboard(
               score: viewModel.score,
               totalQuestions: viewModel.totalQuestions,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class GameOverScreen extends StatelessWidget {
+  final QuizViewModel viewModel;
+  const GameOverScreen({required this.viewModel, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(automaticallyImplyLeading: false),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Scoreboard(
+              score: viewModel.score,
+              totalQuestions: viewModel.totalQuestions,
+            ),
+            Text('You Win!', style: Theme.of(context).textTheme.displayLarge),
+            Text(
+              'Score: ${viewModel.score} / ${viewModel.totalQuestions}',
+              style: Theme.of(context).textTheme.displaySmall,
+            ),
+            ElevatedButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
             ),
           ],
         ),

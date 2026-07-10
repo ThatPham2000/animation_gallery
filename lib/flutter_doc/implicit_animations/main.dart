@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
 import 'home_screen.dart';
@@ -15,6 +16,15 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),  // NEW
+            TargetPlatform.iOS: FadeThroughPageTransitionsBuilder(),         // NEW
+            TargetPlatform.macOS: FadeThroughPageTransitionsBuilder(),       // NEW
+            TargetPlatform.windows: FadeThroughPageTransitionsBuilder(),     // NEW
+            TargetPlatform.linux: FadeThroughPageTransitionsBuilder(),       // NEW
+          },
+        ),
       ),
       home: const HomeScreen(),
     );
