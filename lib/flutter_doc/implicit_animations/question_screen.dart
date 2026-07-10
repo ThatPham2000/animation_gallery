@@ -86,13 +86,49 @@ class QuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text(
-          question ?? '',
-          style: Theme.of(context).textTheme.displaySmall,
+    return AnimatedSwitcher(
+      layoutBuilder: (currentChild, previousChildren) {
+        return Stack(
+          alignment: Alignment.topCenter,
+          children: <Widget>[
+            ...previousChildren,
+            if (currentChild != null) currentChild,
+          ],
+        );
+      },
+      transitionBuilder: (child, animation) {
+        // var offsetAnimation = animation
+        //     .drive(CurveTween(curve: Curves.easeInCubic))
+        //     .drive(Tween<Offset>(
+        //         begin: const Offset(-0.1, 0.0), end: Offset.zero));
+        // return SlideTransition(position: offsetAnimation, child: child);
+        // Add from here...
+
+        final curveAnimation = CurveTween(
+          curve: Curves.easeInCubic,
+        ).animate(animation);
+        final offsetAnimation = Tween<Offset>(
+          begin: const Offset(-0.1, 0.0),
+          end: Offset.zero,
+        ).animate(curveAnimation);
+        final fadeInAnimation = curveAnimation; // NEW
+        return FadeTransition(
+          // NEW
+          opacity: fadeInAnimation, // NEW
+          child:
+              SlideTransition(position: offsetAnimation, child: child), // NEW
+        );
+      },
+      duration: const Duration(milliseconds: 300),
+      child: Card(
+        key: ValueKey(question),
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            question ?? '',
+            style: Theme.of(context).textTheme.displaySmall,
+          ),
         ),
       ),
     );
